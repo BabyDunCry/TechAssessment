@@ -16,7 +16,8 @@ namespace TechnicalAssesment.Controllers
     public class StuffController : ApiController
     {
         private TechnicalAssesmentContext db = new TechnicalAssesmentContext();
-        private string WorkingKey = "TechAssessment1234567890";
+        private string WorkingKey = "7acLhVlqauztVPxar6gDz+u/tg6hrOgNjdg6I/+ecKU=";
+
         // GET: api/stuff/GetAllStuffs
         public IQueryable<tStuff> GetAllStuffs()
         {
@@ -89,10 +90,13 @@ namespace TechnicalAssesment.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Stuff
+        // POST: api/PosttStuff
         [ResponseType(typeof(Models.Obj.CreateStuff.responseData))]
         public IHttpActionResult PosttStuff(Models.Obj.CreateStuff.requestData requestData)
         {
+            //Signaure string 
+            //FirstName  + LastName + Position 
+
             var authHeader = Request.Headers.Authorization;
             string authCode = "";
 
@@ -119,7 +123,18 @@ namespace TechnicalAssesment.Controllers
                 db.tStuffs.Add(tStuff);
                 db.SaveChanges();
 
-                return CreatedAtRoute("DefaultApi", new { id = tStuff.id, signature ="123213123213" }, tStuff);
+                var responseResult = new Models.Obj.CreateStuff.responseData();
+                responseResult.FirstName = tStuff.FirstName;
+                responseResult.LastName = tStuff.LastName;
+                responseResult.ID = tStuff.id;
+                responseResult.JoinedData = tStuff.JoinedDate;
+                responseResult.Position = tStuff.Position;
+
+                var encryptstring = responseResult.ID + responseResult.FirstName + responseResult.JoinedData;
+                responseResult.signature = Utils.AesEncryption(encryptstring, WorkingKey);
+                var testde = Utils.AesDecryption(responseResult.signature, WorkingKey);
+
+                return CreatedAtRoute("DefaultApi", new { id = tStuff.id }, responseResult);
             }
             else
             {

@@ -20,7 +20,7 @@ namespace TechincalAssesment2
             string plus = "";
             int lastnum = 0;
 
-            Console.WriteLine("Please insert the numbers:");
+            Console.WriteLine("Please insert 9 numbers:");
             //loop the number of time for user to insert the input
             for (int i = 1; i<=9; i++) 
             {
